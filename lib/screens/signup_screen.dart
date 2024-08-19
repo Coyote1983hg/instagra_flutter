@@ -1,9 +1,14 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:instagra_flutter/resources/auth_methods.dart';
 import 'package:instagra_flutter/utils/colors.dart';
+import 'package:instagra_flutter/utils/utils.dart';
 import 'package:instagra_flutter/widgets/text_field_input.dart';
 
 class SignupScreen extends StatefulWidget {
-  SignupScreen({super.key});
+  const SignupScreen({super.key});
 
   @override
   _SignupScreenState createState() => _SignupScreenState();
@@ -14,6 +19,7 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _bioController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
+  Uint8List? _image;
 
   @override
   void dispose() {
@@ -22,6 +28,14 @@ class _SignupScreenState extends State<SignupScreen> {
     _passwordController.dispose();
     _bioController.dispose();
     _usernameController.dispose();
+    _file: _image!;
+  }
+
+  void selectImage() async {
+    Uint8List im = await pickImage(ImageSource.gallery);
+    setState(() {
+      _image = im;
+    });
   }
 
   @override
@@ -43,7 +57,35 @@ class _SignupScreenState extends State<SignupScreen> {
                 height: 64,
               ),
               const SizedBox(height: 64),
-               TextFieldInput(
+
+              //circular widget to accept our file
+
+              Stack(
+                children: [
+                  _image != null
+                      ? CircleAvatar(
+                          radius: 64,
+                          backgroundImage: MemoryImage(_image!),
+                        )
+                      : const CircleAvatar(
+                          radius: 64,
+                          backgroundImage: NetworkImage(
+                              "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?size=626&ext=jpg"),
+                        ),
+                  Positioned(
+                    bottom: -10,
+                    left: 80,
+                    child: IconButton(
+                      onPressed: selectImage,
+                      icon: const Icon(
+                        Icons.add_a_photo,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              TextFieldInput(
                 textEditingController: _usernameController,
                 hintText: "Enter your username",
                 textInputType: TextInputType.text,
@@ -77,6 +119,16 @@ class _SignupScreenState extends State<SignupScreen> {
                 height: 24,
               ),
               InkWell(
+                onTap: () async {
+                  String res = await AuthMethods().signUpUser(
+                    email: _emailController.text,
+                    password: _passwordController.text,
+                    username: _usernameController.text,
+                    bio: _bioController.text,
+                    file: _image!,
+                  );
+                  print(res);
+                },
                 child: Container(
                   width: double.infinity,
                   alignment: Alignment.center,
