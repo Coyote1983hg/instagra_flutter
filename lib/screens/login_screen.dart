@@ -1,4 +1,7 @@
+
 import 'package:flutter/material.dart';
+
+import 'package:instagra_flutter/resources/auth_methods.dart';
 import 'package:instagra_flutter/utils/colors.dart';
 import 'package:instagra_flutter/widgets/text_field_input.dart';
 
@@ -16,8 +19,29 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void dispose() {
     super.dispose();
-    _emailController;
-    _passwordController;
+    _emailController.dispose();
+    _passwordController.dispose();
+  }
+
+  void showSnackBar(String content, BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(content),
+      ),
+    );
+  }
+
+  void loginUser() async {
+    String res = await AuthMethods().loginUser(
+      email: _emailController.text,
+      password: _passwordController.text,
+    );
+
+    if (res == "success") {
+      // Logica de succes
+    } else {
+      showSnackBar(res, context);
+    }
   }
 
   @override
@@ -49,7 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               TextFieldInput(
                 textEditingController: _passwordController,
-                hintText: "Enter your pasword",
+                hintText: "Enter your password",
                 textInputType: TextInputType.text,
                 isPass: true,
               ),
@@ -57,6 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 height: 24,
               ),
               InkWell(
+                onTap: loginUser,
                 child: Container(
                   width: double.infinity,
                   alignment: Alignment.center,
@@ -85,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: const Text("Don't have an account?"),
                   ),
                   GestureDetector(
-                    onTap: (){},
+                    onTap: () {},
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       child: const Text(

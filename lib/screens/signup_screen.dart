@@ -20,6 +20,7 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _bioController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   Uint8List? _image;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -28,13 +29,40 @@ class _SignupScreenState extends State<SignupScreen> {
     _passwordController.dispose();
     _bioController.dispose();
     _usernameController.dispose();
-    _file: _image!;
+    _file:
+    _image!;
   }
 
   void selectImage() async {
     Uint8List im = await pickImage(ImageSource.gallery);
     setState(() {
       _image = im;
+    });
+  }
+
+  void signUpUser() async {
+    setState(() {
+      _isLoading = true;
+    });
+    String res = await AuthMethods().signUpUser(
+      email: _emailController.text,
+      password: _passwordController.text,
+      username: _usernameController.text,
+      bio: _bioController.text,
+      file: _image!,
+    );
+    
+    if (res != 'success') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(res),
+        ),
+      );
+    } else {
+      // Succes - poți adăuga logica dorită aici
+    }
+    setState(() {
+      _isLoading = false;
     });
   }
 
@@ -119,16 +147,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 height: 24,
               ),
               InkWell(
-                onTap: () async {
-                  String res = await AuthMethods().signUpUser(
-                    email: _emailController.text,
-                    password: _passwordController.text,
-                    username: _usernameController.text,
-                    bio: _bioController.text,
-                    file: _image!,
-                  );
-                  print(res);
-                },
+                onTap: signUpUser,
                 child: Container(
                   width: double.infinity,
                   alignment: Alignment.center,
@@ -141,7 +160,14 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
                     color: blueColor,
                   ),
-                  child: const Text("Log In"),
+                  child: _isLoading
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                            color: primaryColor,
+                          ),
+                        )
+                      : const Text("Sign Up"),
+                 
                 ),
               ),
               const SizedBox(height: 12),
