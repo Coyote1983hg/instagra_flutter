@@ -1,7 +1,9 @@
-
 import 'package:flutter/material.dart';
-
 import 'package:instagra_flutter/resources/auth_methods.dart';
+import 'package:instagra_flutter/responsive/mobile_screen_layout.dart';
+import 'package:instagra_flutter/responsive/responsive_layout_screen.dart';
+import 'package:instagra_flutter/responsive/web_screen_layout.dart';
+import 'package:instagra_flutter/screens/signup_screen.dart';
 import 'package:instagra_flutter/utils/colors.dart';
 import 'package:instagra_flutter/widgets/text_field_input.dart';
 
@@ -15,6 +17,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -32,17 +35,38 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void loginUser() async {
+    setState(() {
+      _isLoading = true;
+    });
     String res = await AuthMethods().loginUser(
       email: _emailController.text,
       password: _passwordController.text,
     );
 
     if (res == "success") {
+       Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const ResponsiveLayout(
+              webScreenLayout: WebScreenLayout(),
+              mobileScreenLayout: MobileScreenLayout()),
+        ),
+      );
       // Logica de succes
     } else {
       showSnackBar(res, context);
     }
+    setState(() {
+      _isLoading = false;
+    });
+    
   }
+  void navigateToSignup() {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => const SignupScreen(),
+        ),
+      );
+    }
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +118,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     color: blueColor,
                   ),
-                  child: const Text("Log In"),
+                  child: _isLoading
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                            color: primaryColor,
+                          ),
+                        )
+                      : const Text("Log In"),
                 ),
               ),
               const SizedBox(height: 12),
@@ -110,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: const Text("Don't have an account?"),
                   ),
                   GestureDetector(
-                    onTap: () {},
+                    onTap: navigateToSignup,
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       child: const Text(

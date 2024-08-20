@@ -3,6 +3,10 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:instagra_flutter/resources/auth_methods.dart';
+import 'package:instagra_flutter/responsive/mobile_screen_layout.dart';
+import 'package:instagra_flutter/responsive/responsive_layout_screen.dart';
+import 'package:instagra_flutter/responsive/web_screen_layout.dart';
+import 'package:instagra_flutter/screens/login_screen.dart';
 import 'package:instagra_flutter/utils/colors.dart';
 import 'package:instagra_flutter/utils/utils.dart';
 import 'package:instagra_flutter/widgets/text_field_input.dart';
@@ -51,7 +55,7 @@ class _SignupScreenState extends State<SignupScreen> {
       bio: _bioController.text,
       file: _image!,
     );
-    
+
     if (res != 'success') {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -59,11 +63,26 @@ class _SignupScreenState extends State<SignupScreen> {
         ),
       );
     } else {
-      // Succes - poți adăuga logica dorită aici
+      
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const ResponsiveLayout(
+              webScreenLayout: WebScreenLayout(),
+              mobileScreenLayout: MobileScreenLayout()),
+        ),
+      );
     }
     setState(() {
       _isLoading = false;
     });
+  }
+
+  void navigateToLogin() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const LoginScreen(),
+      ),
+    );
   }
 
   @override
@@ -167,7 +186,6 @@ class _SignupScreenState extends State<SignupScreen> {
                           ),
                         )
                       : const Text("Sign Up"),
-                 
                 ),
               ),
               const SizedBox(height: 12),
@@ -183,11 +201,11 @@ class _SignupScreenState extends State<SignupScreen> {
                     child: const Text("Don't have an account?"),
                   ),
                   GestureDetector(
-                    onTap: () {},
+                    onTap: navigateToLogin,
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       child: const Text(
-                        "Sign Up",
+                        "Login",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                         ),
