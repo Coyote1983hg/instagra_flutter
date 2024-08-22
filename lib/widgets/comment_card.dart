@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class CommentCard extends StatefulWidget {
-  const CommentCard({super.key});
+  final snap;
+  CommentCard({super.key,required this.snap});
 
   @override
   State<CommentCard> createState() => _CommentCardState();
@@ -54,7 +55,8 @@ class _CommentCardState extends State<CommentCard> {
                     padding: EdgeInsets.only(top: 4),
                     child: Text(
                       '23/08/24',
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
+                      style:
+                          TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
                     ),
                   ),
                 ],
