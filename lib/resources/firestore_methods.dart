@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:instagra_flutter/models/post.dart';
 import 'package:instagra_flutter/resources/storage_methods.dart';
@@ -42,13 +43,41 @@ class FirestoreMethods {
   Future<void> likePost(String postId, String uid, List likes) async {
     try {
       if (likes.contains(uid)) {
-       await _firestore.collection('posts').doc(postId).update({
+        await _firestore.collection('posts').doc(postId).update({
           'likes': FieldValue.arrayRemove([uid]),
         });
-      }else{
-         await _firestore.collection('posts').doc(postId).update({
+      } else {
+        await _firestore.collection('posts').doc(postId).update({
           'likes': FieldValue.arrayUnion([uid]),
         });
+      }
+    } catch (e) {
+      print(
+        e.toString(),
+      );
+    }
+  }
+
+  Future<void> postComment(String postId, String text, String uid,
+      String name, String profilePic) async {
+    try {
+      if (text.isNotEmpty) {
+        String commentId = const Uuid().v1();
+        await _firestore
+            .collection('posts')
+            .doc(postId)
+            .collection('comments')
+            .doc(commentId)
+            .set({
+          'profilePic': profilePic,
+          'name': name,
+          'uid': uid,
+          'datePublished': DateTime.now(),
+        });
+      } else {
+        if (kDebugMode) {
+          print('Text is empty');
+        }
       }
     } catch (e) {
       print(
