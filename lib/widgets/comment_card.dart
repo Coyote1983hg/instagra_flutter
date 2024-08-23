@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class CommentCard extends StatefulWidget {
   final snap;
-  CommentCard({super.key,required this.snap});
+  const CommentCard({super.key, required this.snap});
 
   @override
   State<CommentCard> createState() => _CommentCardState();
@@ -18,9 +20,9 @@ class _CommentCardState extends State<CommentCard> {
       ),
       child: Row(
         children: [
-          const CircleAvatar(
+          CircleAvatar(
             backgroundImage: NetworkImage(
-              'https://plus.unsplash.com/premium_photo-1670148434900-5f0af77ba500?q=80&w=3087&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+              widget.snap['profilePic'],
             ),
             radius: 18,
           ),
@@ -34,29 +36,32 @@ class _CommentCardState extends State<CommentCard> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   RichText(
-                    text: const TextSpan(
+                    text: TextSpan(
                       children: [
                         TextSpan(
-                          text: 'username',
-                          style: TextStyle(
+                          text: widget.snap['name'],
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         TextSpan(
-                          text: 'Some description',
-                          style: TextStyle(
+                          text: '  ${widget.snap['text']}',
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const Padding(
-                    padding: EdgeInsets.only(top: 4),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
                     child: Text(
-                      '23/08/24',
-                      style:
-                          TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
+                      widget.snap['datePublished'] != null
+                          ? DateFormat.yMMMMd().format(
+                              (widget.snap['datePublished'] as Timestamp)
+                                  .toDate(),
+                            )
+                          : 'Date not available',
                     ),
                   ),
                 ],
@@ -67,7 +72,7 @@ class _CommentCardState extends State<CommentCard> {
             padding: const EdgeInsets.all(8),
             child: const Icon(
               Icons.favorite,
-              size: 24,
+              size: 24,color: Colors.redAccent,
             ),
           ),
         ],

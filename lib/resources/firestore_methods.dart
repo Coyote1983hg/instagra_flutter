@@ -73,6 +73,7 @@ class FirestoreMethods {
           'name': name,
           'uid': uid,
           'datePublished': DateTime.now(),
+          'text':text,
         });
       } else {
         if (kDebugMode) {
