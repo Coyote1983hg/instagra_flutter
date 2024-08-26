@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:instagra_flutter/screens/profile_screen.dart';
 import 'package:instagra_flutter/utils/colors.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({super.key});
+  const SearchScreen({Key? key}) : super(key: key);
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -15,58 +16,60 @@ class _SearchScreenState extends State<SearchScreen> {
   bool isShowUsers = false;
 
   @override
-  void dispose() {
-    searchController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: mobileBackgroundColor,
-        title: TextFormField(
-          controller: searchController,
-          decoration: const InputDecoration(
-            labelText: 'Search for a user',
+        title: Form(
+          child: TextFormField(
+            controller: searchController,
+            decoration:
+                const InputDecoration(labelText: 'Search for a user...'),
+            onFieldSubmitted: (String _) {
+              setState(() {
+                isShowUsers = true;
+              });
+            },
           ),
-          onFieldSubmitted: (String _) {
-            setState(() {
-              isShowUsers = true;
-            });
-          },
         ),
       ),
       body: isShowUsers
-          ? FutureBuilder<QuerySnapshot>(
+          ? FutureBuilder(
               future: FirebaseFirestore.instance
                   .collection('users')
-                  .where('username', isEqualTo: searchController.text)
+                  .where(
+                    'username',
+                    isGreaterThanOrEqualTo: searchController.text,
+                  )
                   .get(),
               builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
+                if (!snapshot.hasData) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
                 }
-
-                if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                }
-
-                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return const Center(child: Text('No users found'));
-                }
-
                 return ListView.builder(
-                  itemCount: snapshot.data!.docs.length,
+                  itemCount: (snapshot.data! as dynamic).docs.length,
                   itemBuilder: (context, index) {
-                    var userData = snapshot.data!.docs[index].data() as Map<String, dynamic>;
-                    return ListTile(
-                      leading: CircleAvatar(
-                        backgroundImage: NetworkImage(userData['photoUrl'] ?? ''),
-                        // Folosim un placeholder dacă photoUrl nu există
-                        onBackgroundImageError: (_, __) => const Icon(Icons.person),
+                    return InkWell(
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => ProfileScreen(
+                            uid: (snapshot.data! as dynamic).docs[index]['uid'],
+                          ),
+                        ),
                       ),
-                      title: Text(userData['username'] ?? 'Unknown'),
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundImage: NetworkImage(
+                            (snapshot.data! as dynamic).docs[index]['photoUrl'],
+                          ),
+                          radius: 16,
+                        ),
+                        title: Text(
+                          (snapshot.data! as dynamic).docs[index]['username'],
+                        ),
+                      ),
                     );
                   },
                 );
