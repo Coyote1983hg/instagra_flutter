@@ -49,7 +49,7 @@ class _WebScreenLayoutState extends State<WebScreenLayout> {
         title: Image.asset(
           'assets/brandmark-design (21).png',
          
-          height: 32,
+          height: 24,
         ),
         actions: [
           IconButton(

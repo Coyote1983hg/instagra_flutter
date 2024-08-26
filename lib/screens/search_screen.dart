@@ -5,7 +5,7 @@ import 'package:instagra_flutter/screens/profile_screen.dart';
 import 'package:instagra_flutter/utils/colors.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({super.key});
+  const SearchScreen({Key? key}) : super(key: key);
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
