@@ -5,7 +5,7 @@ import 'package:instagra_flutter/utils/global_variables.dart';
 import 'package:instagra_flutter/widgets/post_card.dart';
 
 class FeedScreen extends StatefulWidget {
-  const FeedScreen({Key? key}) : super(key: key);
+  const FeedScreen({super.key});
 
   @override
   State<FeedScreen> createState() => _FeedScreenState();

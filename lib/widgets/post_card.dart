@@ -36,7 +36,8 @@ class _PostCardState extends State<PostCard> {
           .get();
       commentLen = snap.docs.length;
     } catch (e) {
-      showSnackBar(e.toString(), context);
+      // ignore: use_build_context_synchronously
+      showSnackBar(e.toString(),context);
     }
     setState(() {});
   }
@@ -118,7 +119,7 @@ class _PostCardState extends State<PostCard> {
                       ),
                     );
                   },
-                  icon: const Icon(Icons.more_vert),
+                  icon: const Icon(Icons.more_vert,),
                 ),
               ],
             ),
