@@ -129,7 +129,7 @@ class _PostCardState extends State<PostCard> {
             onDoubleTap: () async {
               await FirestoreMethods().likePost(
                 widget.snap['postId'],
-                user.uid,
+                user!.uid,
                 widget.snap['likes'],
               );
               setState(() {
@@ -174,17 +174,17 @@ class _PostCardState extends State<PostCard> {
           Row(
             children: [
               LikeAnimation(
-                isAnimating: widget.snap['likes'].contains(user.uid),
+                isAnimating: widget.snap['likes'].contains(user?.uid),
                 smallLike: true,
                 child: IconButton(
                   onPressed: () async {
                     await FirestoreMethods().likePost(
                       widget.snap['postId'],
-                      user.uid,
+                      user!.uid,
                       widget.snap['likes'],
                     );
                   },
-                  icon: widget.snap['likes'].contains(user.uid)
+                  icon: widget.snap['likes'].contains(user?.uid)
                       ? const Icon(
                           Icons.favorite,
                           color: Colors.red,

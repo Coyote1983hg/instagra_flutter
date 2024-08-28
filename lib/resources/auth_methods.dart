@@ -94,4 +94,3 @@ class AuthMethods {
     await _auth.signOut();
   }
 }
-
